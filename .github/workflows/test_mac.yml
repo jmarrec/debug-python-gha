@@ -34,6 +34,7 @@ jobs:
     - name: install stuff
       shell: bash
       run: |
+        brew install gettext
         brew install tree
 
         rm -Rf $RUNNER_TOOL_CACHE/Python/
