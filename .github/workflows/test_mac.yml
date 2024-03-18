@@ -30,13 +30,16 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-
     - name: install stuff
       shell: bash
       run: |
+        set -e
+        set -x
         brew install tree
-
         rm -Rf $RUNNER_TOOL_CACHE/Python/
+        brew --prefix gettext
+        ls $(brew --prefix gettext)
+        ls $(brew --prefix gettext)/lib
 
     - name: Set up Python ${{ env.Python_REQUIRED_VERSION }}
       id: setup-python
