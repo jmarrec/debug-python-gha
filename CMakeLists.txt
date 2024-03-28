@@ -1,3 +1,8 @@
+cmake_minimum_required(VERSION 3.25)
+
+project(DebugPythonGHA)
+message(STATUS "Using CMake ${CMAKE_VERSION}")
+
 if(Python_REQUIRED_VERSION)
   find_package(Python ${Python_REQUIRED_VERSION} EXACT COMPONENTS Interpreter Development REQUIRED)
 else()
@@ -6,3 +11,14 @@ endif()
 get_filename_component(RESOLVED_PYTHON_LIBRARY "${Python_LIBRARIES}" REALPATH)
 message("Python_LIBRARIES=${Python_LIBRARIES}")
 message("RESOLVED_PYTHON_LIBRARY=${RESOLVED_PYTHON_LIBRARY}")
+
+install(
+    CODE "execute_process(
+      COMMAND ${CMAKE_COMMAND}
+      -DRESOLVED_PYTHON_LIB=${RESOLVED_PYTHON_LIBRARY}
+      -DEXECUTABLE_PATH=\${CMAKE_INSTALL_PREFIX}/energyplus${CMAKE_EXECUTABLE_SUFFIX}
+      -P ${PROJECT_SOURCE_DIR}/cmake/PythonGetLibAndLinkUp.cmake
+    )")
+
+set(CPACK_GENERATOR "TGZ")
+include(CPack)

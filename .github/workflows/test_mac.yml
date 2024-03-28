@@ -35,7 +35,7 @@ jobs:
       run: |
         set -e
         set -x
-        brew install tree
+        brew install tree ninja
         rm -Rf $RUNNER_TOOL_CACHE/Python/
         brew --prefix gettext
         ls $(brew --prefix gettext)
@@ -59,11 +59,17 @@ jobs:
       working-directory: ./build
       shell: bash
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=Release \
+        cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=Release \
               -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${{ matrix.macos_dev_target }} \
               -DPython_REQUIRED_VERSION:STRING=${{ steps.setup-python.outputs.python-version }} \
               -DPython_ROOT_DIR:PATH=$RUNNER_TOOL_CACHE/Python/${{ steps.setup-python.outputs.python-version }}/x64/ \
               ../
+
+    - name: package
+      working-directory: ./build
+      shell: bash
+      run: |
+        ninja package
 
     - name:  Dump CMakeCache
       working-directory: ./build

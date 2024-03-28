@@ -24,20 +24,21 @@ jobs:
     - name: Create Build Directory
       run: cmake -E make_directory ./build/
 
-    - name: debug tool cache
-      working-directory: C:/hostedtoolcache/windows/Python/${{ steps.setup-python.outputs.python-version }}/x64/
-      shell: pwsh
-      run: |
-        tree /f /a
-
     - name: Configure CMake
       working-directory: ./build
       shell: bash
       run: |
-        cmake -DCMAKE_BUILD_TYPE:STRING=Release \
+        cmake -G "Visual Studio 16 2019" -A x64 \
+              -DCMAKE_BUILD_TYPE:STRING=Release \
               -DPython_REQUIRED_VERSION:STRING=${{ steps.setup-python.outputs.python-version }} \
               -DPython_ROOT_DIR:PATH=$RUNNER_TOOL_CACHE/Python/${{ steps.setup-python.outputs.python-version }}/x64/ \
               ../
+
+    - name: package
+      working-directory: ./build
+      shell: bash
+      run: |
+        cmake --build . --target package -j 4 --config Release
 
     - name:  Dump CMakeCache
       working-directory: ./build
@@ -45,3 +46,8 @@ jobs:
       run: |
         cat CMakeCache.txt
 
+    - name: debug tool cache
+      working-directory: C:/hostedtoolcache/windows/Python/${{ steps.setup-python.outputs.python-version }}/x64/
+      shell: pwsh
+      run: |
+        tree /f /a
