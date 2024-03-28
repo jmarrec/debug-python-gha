@@ -24,6 +24,12 @@ jobs:
     - name: Create Build Directory
       run: cmake -E make_directory ./build/
 
+    - name: debug tool cache
+      working-directory: C:/hostedtoolcache/windows/Python/${{ steps.setup-python.outputs.python-version }}/x64/
+      shell: pwsh
+      run: |
+        tree /f /a
+
     - name: Configure CMake
       working-directory: ./build
       shell: bash
