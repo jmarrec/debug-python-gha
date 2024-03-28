@@ -1,0 +1,41 @@
+name: Windows Test
+
+on:
+  push:
+
+env:
+  Python_REQUIRED_VERSION: 3.8
+
+jobs:
+  windows_release:
+    name: "Test windows"
+    runs-on: windows-2019
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python ${{ env.Python_REQUIRED_VERSION }}
+      uses: actions/setup-python@v4
+      id: setup-python
+      with:
+        python-version: ${{ env.Python_REQUIRED_VERSION }}
+        architecture: x64
+
+    - name: Create Build Directory
+      run: cmake -E make_directory ./build/
+
+    - name: Configure CMake
+      working-directory: ./build
+      shell: bash
+      run: |
+        cmake -DCMAKE_BUILD_TYPE:STRING=Release \
+              -DPython_REQUIRED_VERSION:STRING=${{ steps.setup-python.outputs.python-version }} \
+              -DPython_ROOT_DIR:PATH=$RUNNER_TOOL_CACHE/Python/${{ steps.setup-python.outputs.python-version }}/x64/ \
+              ../
+
+    - name:  Dump CMakeCache
+      working-directory: ./build
+      shell: bash
+      run: |
+        cat CMakeCache.txt
+
