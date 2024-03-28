@@ -30,46 +30,22 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: install stuff
-      shell: bash
-      run: |
-        set -e
-        set -x
-        brew install tree ninja
-        rm -Rf $RUNNER_TOOL_CACHE/Python/
-        brew --prefix gettext
-        ls $(brew --prefix gettext)
-        ls $(brew --prefix gettext)/lib
-
-    - name: Set up Python ${{ env.Python_REQUIRED_VERSION }}
-      id: setup-python
-      uses: jmarrec/setup-python@v5
-      with:
-        python-version: ${{ env.Python_REQUIRED_VERSION }}
-
     - name: Create Build Directory
       run: cmake -E make_directory ./build/
-
-    - name: debug tool cache
-      shell: bash
-      run: |
-        tree $RUNNER_TOOL_CACHE/Python/
 
     - name: Configure CMake
       working-directory: ./build
       shell: bash
       run: |
-        cmake -G Ninja -DCMAKE_BUILD_TYPE:STRING=Release \
+        cmake -DCMAKE_BUILD_TYPE:STRING=Release \
               -DCMAKE_OSX_DEPLOYMENT_TARGET:STRING=${{ matrix.macos_dev_target }} \
-              -DPython_REQUIRED_VERSION:STRING=${{ steps.setup-python.outputs.python-version }} \
-              -DPython_ROOT_DIR:PATH=$RUNNER_TOOL_CACHE/Python/${{ steps.setup-python.outputs.python-version }}/x64/ \
               ../
 
     - name: package
       working-directory: ./build
       shell: bash
       run: |
-        ninja package
+        make -j $(nproc) package
 
     - name:  Dump CMakeCache
       working-directory: ./build

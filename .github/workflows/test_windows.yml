@@ -19,14 +19,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Python ${{ env.Python_REQUIRED_VERSION }}
-      uses: actions/setup-python@v4
-      id: setup-python
-      with:
-        python-version: ${{ env.Python_REQUIRED_VERSION }}
-        architecture: x64
-
-
     - name: Downgrade cmake to 3.28
       if: matrix.cmake_version != 'latest'
       run: |
@@ -46,8 +38,6 @@ jobs:
       run: |
         cmake -G "Visual Studio 16 2019" -A x64 \
               -DCMAKE_BUILD_TYPE:STRING=Release \
-              -DPython_REQUIRED_VERSION:STRING=${{ steps.setup-python.outputs.python-version }} \
-              -DPython_ROOT_DIR:PATH=$RUNNER_TOOL_CACHE/Python/${{ steps.setup-python.outputs.python-version }}/x64/ \
               ../
 
     - name: package
@@ -61,9 +51,3 @@ jobs:
       shell: bash
       run: |
         cat CMakeCache.txt
-
-    - name: debug tool cache
-      working-directory: C:/hostedtoolcache/windows/Python/${{ steps.setup-python.outputs.python-version }}/x64/
-      shell: pwsh
-      run: |
-        tree /f /a
