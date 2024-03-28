@@ -12,19 +12,20 @@ get_filename_component(RESOLVED_PYTHON_LIBRARY "${Python_LIBRARIES}" REALPATH)
 message("Python_LIBRARIES=${Python_LIBRARIES}")
 message("RESOLVED_PYTHON_LIBRARY=${RESOLVED_PYTHON_LIBRARY}")
 
-# install(
-#     CODE "execute_process(
-#       COMMAND ${CMAKE_COMMAND}
-#       -DRESOLVED_PYTHON_LIB=${RESOLVED_PYTHON_LIBRARY}
-#       -DEXECUTABLE_PATH=\${CMAKE_INSTALL_PREFIX}/energyplus${CMAKE_EXECUTABLE_SUFFIX}
-#       -P ${PROJECT_SOURCE_DIR}/cmake/PythonGetLibAndLinkUp.cmake
-#     )")
-
 install(CODE [[
   execute_process(
-    COMMAND echo "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}"
+    COMMAND ${CMAKE_COMMAND}
+    -DRESOLVED_PYTHON_LIB=${RESOLVED_PYTHON_LIBRARY}
+    -DEXECUTABLE_PATH=${CMAKE_INSTALL_PREFIX}/energyplus${CMAKE_EXECUTABLE_SUFFIX}
+    -P ${PROJECT_SOURCE_DIR}/cmake/PythonGetLibAndLinkUp.cmake
   )
 ]])
+
+# install(CODE [[
+#   execute_process(
+#     COMMAND echo "CMAKE_INSTALL_PREFIX = ${CMAKE_INSTALL_PREFIX}"
+#   )
+# ]])
 
 
 set(CPACK_GENERATOR "TGZ")
